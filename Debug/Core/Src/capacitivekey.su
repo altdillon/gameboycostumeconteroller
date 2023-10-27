@@ -1,0 +1,2 @@
+../Core/Src/capacitivekey.c:10:5:grabKeys	16	static
+../Core/Src/capacitivekey.c:17:5:getKey	32	static
