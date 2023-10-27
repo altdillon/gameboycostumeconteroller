@@ -435,27 +435,31 @@ void checkkeys(void *argument)
 	buttonUp.gpioport = btnUP_GPIO_Port;
 	buttonUp.gpiopin = btnUP_Pin;
 	buttonUp.triggerTime = 3000;
+	buttonUp.keyCode = 0x52;
 
 	// down button
 	capkey_t buttonDown;
-	buttonUp.pinIndex = 5;
-	buttonUp.gpioport = btnDOWN_GPIO_Port;
-	buttonUp.gpiopin = btnDOWN_Pin;
-	buttonUp.triggerTime = 3000;
+	buttonDown.pinIndex = 5;
+	buttonDown.gpioport = btnDOWN_GPIO_Port;
+	buttonDown.gpiopin = btnDOWN_Pin;
+	buttonDown.triggerTime = 3000;
+	buttonDown.keyCode = 0x51;
 
 	// left button
 	capkey_t buttonLeft;
-	buttonUp.pinIndex = 6;
-	buttonUp.gpioport = btnLEFT_GPIO_Port;
-	buttonUp.gpiopin = btnLEFT_Pin;
-	buttonUp.triggerTime = 3000;
+	buttonLeft.pinIndex = 6;
+	buttonLeft.gpioport = btnLEFT_GPIO_Port;
+	buttonLeft.gpiopin = btnLEFT_Pin;
+	buttonLeft.triggerTime = 3000;
+	buttonLeft.keyCode = 0x50;
 
 	// right button
 	capkey_t buttonRight;
-	buttonUp.pinIndex = 7;
-	buttonUp.gpioport = btnRIGHT_GPIO_Port;
-	buttonUp.gpiopin = btnRIGHT_Pin;
-	buttonUp.triggerTime = 3000;
+	buttonRight.pinIndex = 7;
+	buttonRight.gpioport = btnRIGHT_GPIO_Port;
+	buttonRight.gpiopin = btnRIGHT_Pin;
+	buttonRight.triggerTime = 3000;
+	buttonRight.keyCode = 0x4F;
 
 	// select button
 	capkey_t buttonSelect;
@@ -463,6 +467,7 @@ void checkkeys(void *argument)
 	buttonSelect.gpioport = btnSELECT_GPIO_Port;
 	buttonSelect.gpiopin = btnSELECT_Pin;
 	buttonSelect.triggerTime = 3000;
+	buttonSelect.keyCode = 0x18; // scan key code for u
 
 	// start button
 	capkey_t buttonStart;
@@ -470,6 +475,7 @@ void checkkeys(void *argument)
 	buttonStart.gpioport = btnSTART_GPIO_Port;
 	buttonStart.gpiopin = btnSTART_Pin;
 	buttonStart.triggerTime = 3000;
+	buttonStart.keyCode = 0x19; // scan key code for v
 
 	// HOTKEY
 	capkey_t buttonHotkey;
@@ -477,6 +483,7 @@ void checkkeys(void *argument)
 	buttonHotkey.gpioport = HOTKEY_GPIO_Port;
 	buttonHotkey.gpiopin = HOTKEY_Pin;
 	buttonHotkey.triggerTime = 3000;
+	buttonHotkey.keyCode = 0x0B; // scan key code for h
 
 	capkey_t buttons[keycount];
 	buttons[0] = buttonA;
@@ -491,9 +498,10 @@ void checkkeys(void *argument)
 	buttons[9] = buttonStart;
 	buttons[10] = buttonHotkey;
 
-	// and then interate through that list
+	// main loop
 	for(;;)
 	{
+		// iterate through all the keys and see if we got a hit
 		for(uint8_t i=0;i<keycount;i++)
 		{
 
