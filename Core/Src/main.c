@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdbool.h>
+#include "usbd_hid.h"
 #include "capacitivekey.h"
 /* USER CODE END Includes */
 
@@ -61,6 +62,24 @@ const osThreadAttr_t checkkeysTaskHandle_attributes = {
   .stack_size = 456 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
+
+
+extern USBD_HandleTypeDef hUsbDeviceFS;
+
+typedef struct
+{
+	uint8_t MODIFIER;
+	uint8_t RESERVED;
+	uint8_t KEYCODE1;
+	uint8_t KEYCODE2;
+	uint8_t KEYCODE3;
+	uint8_t KEYCODE4;
+	uint8_t KEYCODE5;
+	uint8_t KEYCODE6;
+}subKeyBoard;
+
+subKeyBoard keyBoardHIDsub = {0,0,0,0,0,0,0,0}; // needs to be global for funky pointer reasons
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -671,11 +690,19 @@ void checkkeys(void *argument)
 			{
 				// key up, send a zero
 				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,0);
+				keyBoardHIDsub.KEYCODE1 = 0x00; // zero for key up
 			}
 			else if(buttons[i].lastState == false && buttons[i].state == true)
 			{
 				// key down, send a key code
 				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,1);
+				keyBoardHIDsub.KEYCODE1 = buttons[i].keyCode;
+			}
+
+			// if a state change occured then update the keys
+			if(buttons[i].state != buttons[i].lastState)
+			{
+				USBD_HID_SendReport(&hUsbDeviceFS,&keyBoardHIDsub,sizeof(keyBoardHIDsub));
 			}
 
 			buttons[i].lastState = buttons[i].state; // update the state
