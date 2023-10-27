@@ -4,5 +4,5 @@
 ../Core/Src/main.c:260:13:MX_TIM2_Init	4
 ../Core/Src/main.c:305:13:MX_GPIO_Init	1
 ../Core/Src/main.c:394:6:checkkeys	2
-../Core/Src/main.c:520:6:StartDefaultTask	1
-../Core/Src/main.c:537:6:Error_Handler	1
+../Core/Src/main.c:521:6:StartDefaultTask	1
+../Core/Src/main.c:538:6:Error_Handler	1

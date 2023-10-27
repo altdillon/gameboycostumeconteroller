@@ -23,6 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdbool.h>
 #include "capacitivekey.h"
 /* USER CODE END Includes */
 
@@ -504,7 +505,12 @@ void checkkeys(void *argument)
 		// iterate through all the keys and see if we got a hit
 		for(uint8_t i=0;i<keycount;i++)
 		{
+			uint32_t keyTime = getKey(&buttons[i],&htim2); // run a hit scan for the keytime
+			if(keyTime > buttons[i].triggerTime) // is the measured transient time greater than the recorded hit time?
+			{
+				// TODO: send the keycode to the client
 
+			}
 		}
 	}
 
