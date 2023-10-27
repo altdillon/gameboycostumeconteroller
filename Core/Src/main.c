@@ -135,7 +135,7 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-  checkkeysTaskHandle = osThreadNew(checkkeys, NULL,&checkkeysTaskHandle_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -323,7 +323,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(driverpin_GPIO_Port, driverpin_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, LD3_Pin|LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Red_Pin|LD2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_PowerSwitchOn_GPIO_Port, USB_PowerSwitchOn_Pin, GPIO_PIN_RESET);
@@ -361,8 +361,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LD3_Pin LD2_Pin */
-  GPIO_InitStruct.Pin = LD3_Pin|LD2_Pin;
+  /*Configure GPIO pins : Red_Pin LD2_Pin */
+  GPIO_InitStruct.Pin = Red_Pin|LD2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -509,8 +509,26 @@ void checkkeys(void *argument)
 			if(keyTime > buttons[i].triggerTime) // is the measured transient time greater than the recorded hit time?
 			{
 				// TODO: send the keycode to the client
-
+				buttons[i].state = true;
 			}
+			else
+			{
+				buttons[i].state = false;
+			}
+
+			// if last state is false and current state is true then send a zero
+			if(buttons[i].lastState == true && buttons[i].state == false)
+			{
+				// key up, send a zero
+				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,1);
+			}
+			else if(buttons[i].lastState == false && buttons[i].state == true)
+			{
+				// key down, send a key code
+				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,0);
+			}
+
+			buttons[i].lastState = buttons[i].state; // update the state
 		}
 	}
 

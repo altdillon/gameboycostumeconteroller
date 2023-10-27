@@ -77,8 +77,8 @@ void Error_Handler(void);
 #define btnSTART_GPIO_Port GPIOC
 #define btnSELECT_Pin GPIO_PIN_2
 #define btnSELECT_GPIO_Port GPIOB
-#define LD3_Pin GPIO_PIN_14
-#define LD3_GPIO_Port GPIOB
+#define Red_Pin GPIO_PIN_14
+#define Red_GPIO_Port GPIOB
 #define USB_OverCurrent_Pin GPIO_PIN_5
 #define USB_OverCurrent_GPIO_Port GPIOG
 #define USB_PowerSwitchOn_Pin GPIO_PIN_6
