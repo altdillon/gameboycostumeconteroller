@@ -58,7 +58,7 @@ const osThreadAttr_t defaultTask_attributes = {
 osThreadId_t checkkeysTaskHandle;
 const osThreadAttr_t checkkeysTaskHandle_attributes = {
   .name = "checkkeytask",
-  .stack_size = 128 * 4,
+  .stack_size = 456 * 4,
   .priority = (osPriority_t) osPriorityNormal,
 };
 /* USER CODE END PV */
@@ -76,6 +76,54 @@ void checkkeys(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// setup the list of keys
+const uint8_t keycount = 11; // 4 buttons + 4 directional + start + select + hotkey
+
+// A button
+capkey_t buttonA;
+
+
+// B button
+capkey_t buttonB;
+
+
+// X button
+capkey_t buttonX;
+
+
+// Y button
+capkey_t buttonY;
+
+
+// up button
+capkey_t buttonUp;
+
+
+// down button
+capkey_t buttonDown;
+
+
+// left button
+capkey_t buttonLeft;
+
+
+// right button
+capkey_t buttonRight;
+
+
+// select button
+capkey_t buttonSelect;
+
+
+// start button
+capkey_t buttonStart;
+
+// HOTKEY
+capkey_t buttonHotkey;
+
+
+
+
 
 /* USER CODE END 0 */
 
@@ -95,6 +143,92 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  buttonA.pinIndex = 0;
+  //buttonA.pinName = "btnA";
+  buttonA.gpioport = btnA_GPIO_Port;
+  buttonA.gpiopin = btnA_Pin;
+  buttonA.triggerTime = 3000;
+  buttonA.keyCode = 0x04;
+
+  // B button
+
+  buttonB.pinIndex = 1;
+  buttonB.gpioport = btnB_GPIO_Port;
+  buttonB.gpiopin = btnB_Pin;
+  buttonB.triggerTime = 3000;
+  buttonB.keyCode = 0x05;
+
+  // X button
+
+  buttonX.pinIndex = 2;
+  buttonX.gpioport = btnX_GPIO_Port;
+  buttonX.gpiopin = btnX_Pin;
+  buttonX.triggerTime = 3000;
+  buttonX.keyCode = 0x1B;
+
+  // Y button
+
+  buttonY.pinIndex = 3;
+  buttonY.gpioport = btnY_GPIO_Port;
+  buttonY.gpiopin = btnY_Pin;
+  buttonY.triggerTime = 3000;
+  buttonY.keyCode = 0x1C;
+
+  // up button
+
+  buttonUp.pinIndex = 4;
+  buttonUp.gpioport = btnUP_GPIO_Port;
+  buttonUp.gpiopin = btnUP_Pin;
+  buttonUp.triggerTime = 3000;
+  buttonUp.keyCode = 0x52;
+
+  // down button
+
+  buttonDown.pinIndex = 5;
+  buttonDown.gpioport = btnDOWN_GPIO_Port;
+  buttonDown.gpiopin = btnDOWN_Pin;
+  buttonDown.triggerTime = 3000;
+  buttonDown.keyCode = 0x51;
+
+  // left button
+
+  buttonLeft.pinIndex = 6;
+  buttonLeft.gpioport = btnLEFT_GPIO_Port;
+  buttonLeft.gpiopin = btnLEFT_Pin;
+  buttonLeft.triggerTime = 3000;
+  buttonLeft.keyCode = 0x50;
+
+  // right button
+
+  buttonRight.pinIndex = 7;
+  buttonRight.gpioport = btnRIGHT_GPIO_Port;
+  buttonRight.gpiopin = btnRIGHT_Pin;
+  buttonRight.triggerTime = 3000;
+  buttonRight.keyCode = 0x4F;
+
+  // select button
+
+  buttonSelect.pinIndex = 8;
+  buttonSelect.gpioport = btnSELECT_GPIO_Port;
+  buttonSelect.gpiopin = btnSELECT_Pin;
+  buttonSelect.triggerTime = 3000;
+  buttonSelect.keyCode = 0x18; // scan key code for u
+
+  // start button
+
+  buttonStart.pinIndex = 9;
+  buttonStart.gpioport = btnSTART_GPIO_Port;
+  buttonStart.gpiopin = btnSTART_Pin;
+  buttonStart.triggerTime = 3000;
+  buttonStart.keyCode = 0x19; // scan key code for v
+
+  // HOTKEY
+
+  buttonHotkey.pinIndex = 10;
+  buttonHotkey.gpioport = HOTKEY_GPIO_Port;
+  buttonHotkey.gpiopin = HOTKEY_Pin;
+  buttonHotkey.triggerTime = 3000;
+  buttonHotkey.keyCode = 0x0B; // scan key code for h
 
   /* USER CODE END Init */
 
@@ -135,7 +269,7 @@ int main(void)
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
-
+  checkkeysTaskHandle = osThreadNew(checkkeys, NULL, &checkkeysTaskHandle_attributes);
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -394,97 +528,113 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void checkkeys(void *argument)
 {
-	// setup the list of keys
-	const uint8_t keycount = 11; // 4 buttons + 4 directional + start + select + hotkey
+	// make sure to actually start the counter!
+	HAL_TIM_Base_Start(&htim2);
 
-	// A button
-	capkey_t buttonA;
-	buttonA.pinIndex = 0;
-	//buttonA.pinName = "btnA";
-	buttonA.gpioport = btnA_GPIO_Port;
-	buttonA.gpiopin = btnA_Pin;
-	buttonA.triggerTime = 3000;
-	buttonA.keyCode = 0x04;
-
-	// B button
-	capkey_t buttonB;
-	buttonB.pinIndex = 1;
-	buttonB.gpioport = btnB_GPIO_Port;
-	buttonB.gpiopin = btnB_Pin;
-	buttonB.triggerTime = 3000;
-	buttonB.keyCode = 0x05;
-
-	// X button
-	capkey_t buttonX;
-	buttonX.pinIndex = 2;
-	buttonX.gpioport = btnX_GPIO_Port;
-	buttonX.gpiopin = btnX_Pin;
-	buttonX.triggerTime = 3000;
-	buttonX.keyCode = 0x1B;
-
-	// Y button
-	capkey_t buttonY;
-	buttonY.pinIndex = 3;
-	buttonY.gpioport = btnY_GPIO_Port;
-	buttonY.gpiopin = btnY_Pin;
-	buttonY.triggerTime = 3000;
-	buttonY.keyCode = 0x1C;
-
-	// up button
-	capkey_t buttonUp;
-	buttonUp.pinIndex = 4;
-	buttonUp.gpioport = btnUP_GPIO_Port;
-	buttonUp.gpiopin = btnUP_Pin;
-	buttonUp.triggerTime = 3000;
-	buttonUp.keyCode = 0x52;
-
-	// down button
-	capkey_t buttonDown;
-	buttonDown.pinIndex = 5;
-	buttonDown.gpioport = btnDOWN_GPIO_Port;
-	buttonDown.gpiopin = btnDOWN_Pin;
-	buttonDown.triggerTime = 3000;
-	buttonDown.keyCode = 0x51;
-
-	// left button
-	capkey_t buttonLeft;
-	buttonLeft.pinIndex = 6;
-	buttonLeft.gpioport = btnLEFT_GPIO_Port;
-	buttonLeft.gpiopin = btnLEFT_Pin;
-	buttonLeft.triggerTime = 3000;
-	buttonLeft.keyCode = 0x50;
-
-	// right button
-	capkey_t buttonRight;
-	buttonRight.pinIndex = 7;
-	buttonRight.gpioport = btnRIGHT_GPIO_Port;
-	buttonRight.gpiopin = btnRIGHT_Pin;
-	buttonRight.triggerTime = 3000;
-	buttonRight.keyCode = 0x4F;
-
-	// select button
-	capkey_t buttonSelect;
-	buttonSelect.pinIndex = 8;
-	buttonSelect.gpioport = btnSELECT_GPIO_Port;
-	buttonSelect.gpiopin = btnSELECT_Pin;
-	buttonSelect.triggerTime = 3000;
-	buttonSelect.keyCode = 0x18; // scan key code for u
-
-	// start button
-	capkey_t buttonStart;
-	buttonStart.pinIndex = 9;
-	buttonStart.gpioport = btnSTART_GPIO_Port;
-	buttonStart.gpiopin = btnSTART_Pin;
-	buttonStart.triggerTime = 3000;
-	buttonStart.keyCode = 0x19; // scan key code for v
-
-	// HOTKEY
-	capkey_t buttonHotkey;
-	buttonHotkey.pinIndex = 10;
-	buttonHotkey.gpioport = HOTKEY_GPIO_Port;
-	buttonHotkey.gpiopin = HOTKEY_Pin;
-	buttonHotkey.triggerTime = 3000;
-	buttonHotkey.keyCode = 0x0B; // scan key code for h
+//	// setup the list of keys
+//	const uint8_t keycount = 11; // 4 buttons + 4 directional + start + select + hotkey
+//
+//	// A button
+//	capkey_t buttonA;
+//	buttonA.pinIndex = 0;
+//	//buttonA.pinName = "btnA";
+//	buttonA.gpioport = btnA_GPIO_Port;
+//	buttonA.gpiopin = btnA_Pin;
+//	buttonA.triggerTime = 3000;
+//	buttonA.keyCode = 0x04;
+//
+//	// B button
+//	capkey_t buttonB;
+//	buttonB.pinIndex = 1;
+//	buttonB.gpioport = btnB_GPIO_Port;
+//	buttonB.gpiopin = btnB_Pin;
+//	buttonB.triggerTime = 3000;
+//	buttonB.keyCode = 0x05;
+//
+//	// X button
+//	capkey_t buttonX;
+//	buttonX.pinIndex = 2;
+//	buttonX.gpioport = btnX_GPIO_Port;
+//	buttonX.gpiopin = btnX_Pin;
+//	buttonX.triggerTime = 3000;
+//	buttonX.keyCode = 0x1B;
+//
+//	// Y button
+//	capkey_t buttonY;
+//	buttonY.pinIndex = 3;
+//	buttonY.gpioport = btnY_GPIO_Port;
+//	buttonY.gpiopin = btnY_Pin;
+//	buttonY.triggerTime = 3000;
+//	buttonY.keyCode = 0x1C;
+//
+//	// up button
+//	capkey_t buttonUp;
+//	buttonUp.pinIndex = 4;
+//	buttonUp.gpioport = btnUP_GPIO_Port;
+//	buttonUp.gpiopin = btnUP_Pin;
+//	buttonUp.triggerTime = 3000;
+//	buttonUp.keyCode = 0x52;
+//
+//	// down button
+//	capkey_t buttonDown;
+//	buttonDown.pinIndex = 5;
+//	buttonDown.gpioport = btnDOWN_GPIO_Port;
+//	buttonDown.gpiopin = btnDOWN_Pin;
+//	buttonDown.triggerTime = 3000;
+//	buttonDown.keyCode = 0x51;
+//
+//	// left button
+//	capkey_t buttonLeft;
+//	buttonLeft.pinIndex = 6;
+//	buttonLeft.gpioport = btnLEFT_GPIO_Port;
+//	buttonLeft.gpiopin = btnLEFT_Pin;
+//	buttonLeft.triggerTime = 3000;
+//	buttonLeft.keyCode = 0x50;
+//
+//	// right button
+//	capkey_t buttonRight;
+//	buttonRight.pinIndex = 7;
+//	buttonRight.gpioport = btnRIGHT_GPIO_Port;
+//	buttonRight.gpiopin = btnRIGHT_Pin;
+//	buttonRight.triggerTime = 3000;
+//	buttonRight.keyCode = 0x4F;
+//
+//	// select button
+//	capkey_t buttonSelect;
+//	buttonSelect.pinIndex = 8;
+//	buttonSelect.gpioport = btnSELECT_GPIO_Port;
+//	buttonSelect.gpiopin = btnSELECT_Pin;
+//	buttonSelect.triggerTime = 3000;
+//	buttonSelect.keyCode = 0x18; // scan key code for u
+//
+//	// start button
+//	capkey_t buttonStart;
+//	buttonStart.pinIndex = 9;
+//	buttonStart.gpioport = btnSTART_GPIO_Port;
+//	buttonStart.gpiopin = btnSTART_Pin;
+//	buttonStart.triggerTime = 3000;
+//	buttonStart.keyCode = 0x19; // scan key code for v
+//
+//	// HOTKEY
+//	capkey_t buttonHotkey;
+//	buttonHotkey.pinIndex = 10;
+//	buttonHotkey.gpioport = HOTKEY_GPIO_Port;
+//	buttonHotkey.gpiopin = HOTKEY_Pin;
+//	buttonHotkey.triggerTime = 3000;
+//	buttonHotkey.keyCode = 0x0B; // scan key code for h
+//
+//	capkey_t buttons[keycount];
+//	buttons[0] = buttonA;
+//	buttons[1] = buttonB;
+//	buttons[2] = buttonX;
+//	buttons[3] = buttonY;
+//	buttons[4] = buttonUp;
+//	buttons[5] = buttonDown;
+//	buttons[6] = buttonLeft;
+//	buttons[7] = buttonRight;
+//	buttons[8] = buttonSelect;
+//	buttons[9] = buttonStart;
+//	buttons[10] = buttonHotkey;
 
 	capkey_t buttons[keycount];
 	buttons[0] = buttonA;
@@ -520,16 +670,18 @@ void checkkeys(void *argument)
 			if(buttons[i].lastState == true && buttons[i].state == false)
 			{
 				// key up, send a zero
-				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,1);
+				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,0);
 			}
 			else if(buttons[i].lastState == false && buttons[i].state == true)
 			{
 				// key down, send a key code
-				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,0);
+				HAL_GPIO_WritePin(Red_GPIO_Port,Red_Pin,1);
 			}
 
 			buttons[i].lastState = buttons[i].state; // update the state
+			osDelay(1);
 		}
+
 	}
 
 }

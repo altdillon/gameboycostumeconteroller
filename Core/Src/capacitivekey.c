@@ -32,6 +32,7 @@ int getKey(capkey_t *key,TIM_HandleTypeDef *htim)
 		deltaTime = __HAL_TIM_GET_COUNTER(htim) - startTime;
 		if(deltaTime > timeOut)
 		{
+			deltaTime = timeOut; // just make the delta time the timeout time
 			break;
 		}
 	}
